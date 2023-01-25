@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.Main">
+   <children>
+      <HBox layoutX="12.0" layoutY="14.0">
+         <children>
+            <VBox>
+               <HBox.margin>
+                  <Insets right="6.0" />
+               </HBox.margin>
+               <children>
+                  <TextField fx:id="codesTextField" prefHeight="25.0" prefWidth="462.0" promptText="CÓDIGOS OACI" />
+               </children>
+            </VBox>
+            <Button mnemonicParsing="false" onAction="#onDownloadButton" prefWidth="103.0" text="Consultar" />
+         </children>
+      </HBox>
+      <HBox layoutX="12.0" layoutY="46.0" />
+      <AnchorPane layoutX="483.0" layoutY="14.0" />
+      <Label fx:id="lbl_name" layoutX="14.0" layoutY="134.0" text="Mensaje" />
+      <Label fx:id="lbl_datetime" layoutX="14.0" layoutY="113.0" text="Fecha y hora" />
+      <Label fx:id="lbl_message" layoutX="14.0" layoutY="86.0" text="Nombre" />
+      <CheckBox fx:id="metarCheckBox" layoutX="12.0" layoutY="46.0" mnemonicParsing="false" text="METAR" />
+      <CheckBox fx:id="tafCheckBox" layoutX="82.0" layoutY="46.0" mnemonicParsing="false" text="TAF" />
+   </children>
+</AnchorPane>
