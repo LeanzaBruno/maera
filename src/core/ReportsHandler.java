@@ -1,5 +1,4 @@
 package core;
-import java.io.IOException;
 import java.util.LinkedList;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -7,8 +6,8 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 /**
- * This class is in charge of download and retrieving the reports from SMN page
- * @author Bruno
+ * This class is in charge of download, parsing and retrieving the reports from SMN page
+ * @author Bruno Leanza
  * @version 1.0
  */
 public final  class ReportsHandler{
@@ -19,55 +18,73 @@ public final  class ReportsHandler{
 		public final String url;
 		REPORT_TYPE(String url){ this.url = url; }
 	}
-	
-	private static ReportsHandler instance;
-	
-	private ReportsHandler(){ }
-	
-	public static ReportsHandler getInstance() {
-		if(instance == null) {
-			instance = new ReportsHandler();
-			return instance;
-		}
-		else
-			return instance;
-	}
-	
-	public LinkedList<WeatherReport> downloadReports(String [] codes, REPORT_TYPE type) {
-		final String url = makeURL(codes, type);
+	private REPORT_TYPE reportType;
+	 
+	public LinkedList<WeatherReport> getReport(LinkedList<String> icaoCodes, REPORT_TYPE reportType) {
+		this.reportType = reportType;
+		final Downloader downloader = new Downloader();
+		final Document page = downloader.getPage(icaoCodes);
+		
+		final Parser parser = new Parser();
+		final Elements resultTables = parser.getTables(page);
+		
 		LinkedList<WeatherReport> reports = new LinkedList<>();
-		final Document page = downloadHTML(url);
-		final Elements tables = getTablesFromPage(page);
-		for(Element table : tables) {
-			WeatherReport report = createWeatherReport(table);
+		for(Element table : resultTables) {
+			WeatherReport report = parser.createWeatherReport(table);
 			reports.add(report);
 		}
 		return reports;
 	}
 	
-	private Document downloadHTML(String url) {
-		Document page = null;
-		try { page = Jsoup.connect(url).get(); }
-		catch(Exception e) { System.out.println("Error!" + e.getMessage()); }
-		return page;
+	public LinkedList<WeatherReport> getMetar(LinkedList<String> icaoCodes){
+		return getReport(icaoCodes, REPORT_TYPE.METAR);
 	}
 	
-	private Elements getTablesFromPage(Document page) {
-		final Elements forms = page.select("form[name='imprimir']");
-		final Elements tables = forms.select("table");
-		return tables;
+	public LinkedList<WeatherReport> getTaf(LinkedList<String> icaoCodes){
+		return getReport(icaoCodes, REPORT_TYPE.TAF);
 	}
 	
-	private WeatherReport createWeatherReport(Element table) {
-		final String airport_name = table.select("td[colspan]").text();
-		final String datetime = table.select("td[nowrap]").text();
-		final String message = table.select("td[width]").text();
-		return new WeatherReport(new Airport(airport_name), datetime, message);
+	
+
+	private class Downloader {
+		Document getPage(LinkedList<String> icaoCodes) {
+			Document page = null;
+			String url = makeURL(icaoCodes);
+			try { page = Jsoup.connect(url).get(); }
+			catch(Exception e) { e.printStackTrace(); }
+			return page;
+		}
+		
+		private String makeURL(LinkedList<String> icaoCodes) {
+			String url = reportType.url;
+			for(String code: icaoCodes) url += "+" + code; 
+			return url;
+		}
 	}
 	
-	private String makeURL(String[] codes, REPORT_TYPE type) {
-		String url = type.url;
-		for(String code : codes ) url += "+" + code;
-		return url;
+
+	private class Parser{
+		private final String FORM_TAG = "form[name='imprimir']";
+		private final String TABLE_TAG = "table";
+		private final String AIRPORT = "td[colspan]";
+		private final String DATETIME = "td[nowrap]";
+		private final String REPORT =  "td[width]";
+				
+		Elements getTables(Document page) {
+			final Elements forms = page.select(FORM_TAG);
+			final Elements tables = forms.select(TABLE_TAG);
+			return tables;
+		}
+
+		WeatherReport createWeatherReport(Element table) {
+			final String airportName = table.select(AIRPORT).text();
+			final String dateTime = table.select(DATETIME).text();
+			final String report = table.select(REPORT).text();
+			switch(reportType) {
+				case METAR: return new METAR(airportName, dateTime, report);
+				case TAF: return new TAF(airportName, dateTime, report);
+				default: return null;
+			}
+		}
 	}
 }

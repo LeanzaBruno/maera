@@ -1,27 +1,36 @@
 package main;
 	
 import javafx.application.Application;
+import javafx.scene.text.Font;
 import javafx.event.ActionEvent;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
+import javafx.scene.control.Control;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.CheckBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.stage.Stage;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import java.util.ArrayList;
+import javafx.geometry.Orientation;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import java.util.Collections;
+import java.util.LinkedList;
 import core.ReportsHandler;
+import core.WeatherReport;
 
 public class Main extends Application {
 	
 	@FXML private TextField codesTextField;
+	@FXML VBox mainPane, resultsPane;
 	
-	@FXML private CheckBox metarCheckBox, tafCheckBox;
-
 	@Override
 	public void start(Stage primaryStage) {
+		primaryStage.setTitle("MAERA");
 		try {
 			primaryStage.setResizable(false);
 			Parent root = FXMLLoader.load(getClass().getResource("main.fxml")); 
@@ -44,19 +53,12 @@ public class Main extends Application {
 		return true;
 	}
 	
-	private boolean areMetarOrTafSelected(){
-		if(metarCheckBox.isSelected() || tafCheckBox.isSelected())
-			return true;
-		return false;
-	}
 	private boolean isEverythingOkay() {
 		if(!isThereAnyCode()) return false;
-		if(!areMetarOrTafSelected()) return false;
 		return true;
 	}
 	
-	public void onDownloadButton(ActionEvent event) {
-		
+	public void onMetarButton(ActionEvent event) {
 		if(!isEverythingOkay()) {
 			Alert errorAlert = new Alert(AlertType.ERROR);
 			errorAlert.setHeaderText("Error");
@@ -65,18 +67,54 @@ public class Main extends Application {
 			return;
 		}
 		
-		String [] codes = getCodes();
-		ReportsHandler handler = ReportsHandler.getInstance();  
-		if(metarCheckBox.isSelected()) {
-			ArrayList<WeatherReport> metars = handler.downloadMETAR(codes);
-		}
-		if(tafCheckBox.isSelected()){
-			handler.downloadReports(codes, ReportsHandler.REPORT_TYPE.TAF);
-			handler.printPage();
-		}
+		LinkedList<String> icaoCodes = getCodes();
+		ReportsHandler handler = new ReportsHandler(); 
+		LinkedList<WeatherReport> metars = handler.getMetar(icaoCodes);
+		printReports(metars);
 	}
 	
-	private String [] getCodes() {
-		return codesTextField.getText().toLowerCase().split(" ");
+	public void onTafButton(ActionEvent event) {
+		if(!isEverythingOkay()) {
+			Alert errorAlert = new Alert(AlertType.ERROR);
+			errorAlert.setHeaderText("Error");
+			errorAlert.setContentText("Hace falta ingresar los códigos oaci o bien marcar algún reporte para solicitar");
+			errorAlert.showAndWait();
+			return;
+		}
+		
+		LinkedList<String> icaoCodes = getCodes();
+		ReportsHandler handler = new ReportsHandler(); 
+		LinkedList<WeatherReport> tafs = handler.getTaf(icaoCodes);
+		printReports(tafs);
 	}
+
+	private LinkedList<String> getCodes() {
+		String [] array =codesTextField.getText().toLowerCase().split(" "); 
+		LinkedList<String> icaoCodes = new LinkedList<>();
+		Collections.addAll(icaoCodes, array);
+		return icaoCodes;
+	}
+	
+	private void printReports(LinkedList<WeatherReport> reports) {
+		resultsPane.getChildren().clear();
+		for(WeatherReport report : reports)
+			createPane(report);
+	}
+	
+	
+	private void createPane(WeatherReport report) {
+		var reportLabel = new Label(report.getReport());
+		reportLabel.setFont(Font.font(14));
+		reportLabel.setWrapText(true);
+		
+		var hBox = new HBox(reportLabel);
+		
+		TitledPane pane = new TitledPane(report.getAirportName() + "    " + report.getDateAndTime(), hBox);
+		pane.setFont(Font.font(16));
+		pane.setCollapsible(false);
+		pane.setExpanded(true);
+		resultsPane.getChildren().add(pane);
+		resultsPane.getScene().getWindow().sizeToScene();
+	}
+	
 }

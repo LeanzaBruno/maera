@@ -2,24 +2,22 @@ package core;
 
 /**
  * WeatherReport represents a weather observation(e.g. METAR) or forecast(e.g. TAF)
- * Both has same values as the airport who has emitted the report, 
- * @author Bruno
+ * @author Bruno Leanza
  * @version 1.0
  */
 
 public class WeatherReport {
-	private Airport airport;
-	private String emission_datetime;
-	private String message;
-	
-	public WeatherReport(Airport airport, String emission_datetime, String message){
-		this.airport = airport;
-		this.emission_datetime = emission_datetime;
-		this.message = message;
+	private String airportName;
+	private String dateTime;
+	private String unparsedReport;
+
+	public WeatherReport(String airportName, String dateTime, String unparsedReport){
+		this.airportName = airportName;
+		this.dateTime = dateTime;
+		this.unparsedReport = unparsedReport;
 	}
 	
-	@Override
-	public String toString() {
-		return "Aeropuerto: " + airport.name() + "\nEmisión: " + emission_datetime + "\n" + message + "\n";
-	}
+	public String getAirportName() { return airportName; }
+	public String getDateAndTime() { return dateTime; }
+	public String getReport() { return unparsedReport; }
 }
