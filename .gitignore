@@ -3,3 +3,5 @@
 .settings
 build.fxbuild
 build.fxbuild
+bin/
+

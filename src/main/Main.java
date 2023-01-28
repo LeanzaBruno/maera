@@ -18,6 +18,8 @@ import javafx.fxml.FXMLLoader;
 import javafx.geometry.Orientation;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import core.ReportsHandler;
@@ -47,51 +49,26 @@ public class Main extends Application {
 		launch(args);
 	}
 	
-	private boolean isThereAnyCode() {
-		final String codes = codesTextField.getText();
-		if(codes == null || codes.isEmpty()) return false;
-		return true;
-	}
-	
-	private boolean isEverythingOkay() {
-		if(!isThereAnyCode()) return false;
-		return true;
-	}
-	
 	public void onMetarButton(ActionEvent event) {
-		if(!isEverythingOkay()) {
-			Alert errorAlert = new Alert(AlertType.ERROR);
-			errorAlert.setHeaderText("Error");
-			errorAlert.setContentText("Hace falta ingresar los códigos oaci o bien marcar algún reporte para solicitar");
-			errorAlert.showAndWait();
-			return;
-		}
-		
-		LinkedList<String> icaoCodes = getCodes();
+		LinkedList<String> airportCodes = getAirportCodes();
+		if(airportCodes == null) return;
 		ReportsHandler handler = new ReportsHandler(); 
-		LinkedList<WeatherReport> metars = handler.getMetar(icaoCodes);
+		LinkedList<WeatherReport> metars = handler.getMetar(airportCodes);
 		printReports(metars);
 	}
 	
 	public void onTafButton(ActionEvent event) {
-		if(!isEverythingOkay()) {
-			Alert errorAlert = new Alert(AlertType.ERROR);
-			errorAlert.setHeaderText("Error");
-			errorAlert.setContentText("Hace falta ingresar los códigos oaci o bien marcar algún reporte para solicitar");
-			errorAlert.showAndWait();
-			return;
-		}
-		
-		LinkedList<String> icaoCodes = getCodes();
+		LinkedList<String> airportCodes = getAirportCodes();
+		if(airportCodes.isEmpty()) return;
 		ReportsHandler handler = new ReportsHandler(); 
-		LinkedList<WeatherReport> tafs = handler.getTaf(icaoCodes);
+		LinkedList<WeatherReport> tafs = handler.getTaf(airportCodes);
 		printReports(tafs);
 	}
 
-	private LinkedList<String> getCodes() {
-		String [] array =codesTextField.getText().toLowerCase().split(" "); 
-		LinkedList<String> icaoCodes = new LinkedList<>();
-		Collections.addAll(icaoCodes, array);
+	private LinkedList<String> getAirportCodes() {
+		final String unparsedCodes = codesTextField.getText();
+		if(unparsedCodes.isBlank()) return null;
+		LinkedList<String> icaoCodes = new LinkedList<>(Arrays.asList(unparsedCodes.split(" ")));
 		return icaoCodes;
 	}
 	
@@ -100,7 +77,6 @@ public class Main extends Application {
 		for(WeatherReport report : reports)
 			createPane(report);
 	}
-	
 	
 	private void createPane(WeatherReport report) {
 		var reportLabel = new Label(report.getReport());
@@ -116,5 +92,4 @@ public class Main extends Application {
 		resultsPane.getChildren().add(pane);
 		resultsPane.getScene().getWindow().sizeToScene();
 	}
-	
 }
