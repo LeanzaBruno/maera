@@ -1,2 +1,0 @@
-# maera
-MAERA Frontend
