@@ -1,0 +1,144 @@
+@import '../node_modules/bootstrap/scss/bootstrap.scss';
+@import url('https://fonts;.googleapis.com/css2?family=Inconsolata:wght@200..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat&family=Poppins:ital,wght@0,400;0,500;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Protest+Riot&display=swap');
+
+$bg-dark: #151c19;
+
+
+.body{
+    background-color: $bg-dark;
+}
+
+.navbar{
+  background-color: #2f3834;
+}
+
+.navbar-brand{
+    font-size: 2rem;
+    font-family: "Protest Riot", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+    padding: 0;
+}
+
+
+.search{
+    $bg-search: #464f4e;
+    $text-color: #ded4cc;
+    $font-size: 2rem;
+    $radius: 4 * $border-radius;
+
+    width: 800px;
+    margin: 300px auto auto;
+    border-radius: 20px;
+    color: $text-color;
+
+    form{
+        border-radius: $radius;
+        border-color: $border-color;
+        display: flex;
+        align-items: center;
+        padding: 0.5rem 1rem;
+        background-color: $bg-search;
+    }
+
+    input{
+        font-size: $font-size; 
+        margin: 0 0.5rem;
+        font-family: "Montserrat", sans-serif;
+        width: 100%;
+        border: 0;
+        background-color: inherit;
+
+        &:focus{
+          outline: none;
+        }
+    }
+
+    .list-group{
+        border-radius: $border-radius;
+        margin-top: 2rem;
+    }
+
+    .list-group-item{
+        font-size: $font-size; 
+        font-family: "Montserrat", sans-serif;
+        padding: 1rem;
+    }
+
+    a {
+        display: flex;
+        justify-content: space-between;
+        text-decoration: none;
+        color: inherit;
+
+    }
+
+    h5{
+        margin: 0;
+    }
+
+}
+
+
+.main{
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+
+
+
+
+.icao{
+    font-family: "Poppins", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.badge{
+    font-size: 0.8rem;
+    font-family: "Montserrat", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.App-logo {
+  height: 40vmin;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .App-logo {
+    animation: App-logo-spin infinite 20s linear;
+  }
+}
+
+.App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+}
+
+.App-link {
+  color: #61dafb;
+}
+
+@keyframes App-logo-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
